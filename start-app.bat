@@ -1,7 +1,21 @@
 @echo off
 chcp 65001 >nul
-echo Starting FitScheduler Backend API Service...
+echo Starting BSweetOrder Yoyaku Backend API Service...
 echo.
+
+REM ===== Option to skip environment setup =====
+set SKIP_ENV_SETUP=0
+set CONFIRM_SKIP=n
+set /p CONFIRM_SKIP="Do you want to skip environment setup and use your pre-configured environment? (y/n, default: n): "
+if /i "%CONFIRM_SKIP%"=="y" set SKIP_ENV_SETUP=1
+
+if %SKIP_ENV_SETUP% EQU 1 (
+    REM ===== Use Pre-configured Environment =====
+    echo Using pre-configured environment...
+    echo Starting backend API service...
+    start cmd /k "cd /d %~dp0 && uvicorn main:app --reload --port 8000"
+    goto :display_info
+)
 
 REM ===== Step 1: Environment Check =====
 echo Step 1: Checking Python environment...
@@ -41,23 +55,29 @@ if %errorlevel% neq 0 (
 
 if %REQUIREMENTS_CHECK% equ 1 (
     echo Installing project dependencies...
-    echo Note: Using --prefer-binary option to prioritize pre-compiled packages and avoid compilation
+    echo Note: Using --only-binary=:all: option to avoid compilation issues
     REM Set Python IO encoding to UTF-8 to resolve encoding issues
     set PYTHONIOENCODING=utf-8
-    venv\Scripts\pip install -r requirements.txt --prefer-binary
+    venv\Scripts\pip install -r requirements.txt --only-binary=:all: -i https://pypi.org/simple/
     if %errorlevel% neq 0 (
-        echo [ERROR] Failed to install dependencies.
-        goto :error
+        echo [WARNING] Failed to install with binary-only packages. Trying with specific pydantic version...
+        venv\Scripts\pip install pydantic==2.4.2 pydantic-core==2.10.1 --only-binary=:all: -i https://pypi.org/simple/
+        venv\Scripts\pip install -r requirements.txt --only-binary=:all: -i https://pypi.org/simple/
+        if %errorlevel% neq 0 (
+            echo [ERROR] Failed to install dependencies.
+            goto :error
+        )
     )
     echo Dependencies installed successfully.
 ) else (
     echo Dependencies already installed, skipping installation step.
 )
 
-REM ===== Step 4: Start Service =====
-echo Step 4: Starting backend API service...
+REM ===== Step 4: Start Service with Virtual Environment =====
+echo Step 4: Starting backend API service using virtual environment...
 start cmd /k "cd /d %~dp0 && venv\Scripts\activate && venv\Scripts\uvicorn main:app --reload --port 8000"
 
+:display_info
 echo.
 echo Backend API service is starting...
 echo The following services will be available in a few seconds:

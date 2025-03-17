@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+      - /app/__pycache__
+      - /app/app/__pycache__
+    depends_on:
+      - db
+    environment:
+      - DATABASE_URL=mysql+pymysql://fituser:fitpassword@db:3306/fitscheduler
+      - SECRET_KEY=${SECRET_KEY:-supersecretkey}
+      - ENVIRONMENT=development
+      - ACCESS_TOKEN_EXPIRE_MINUTES=60
+      - BACKEND_CORS_ORIGINS=["http://localhost:3000","http://localhost:8000"]
+    networks:
+      - fitscheduler-network
+    restart: unless-stopped
+
+  db:
+    image: mysql:8.0
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./sql:/docker-entrypoint-initdb.d
+    environment:
+      - MYSQL_ROOT_PASSWORD=rootpassword
+      - MYSQL_DATABASE=fitscheduler
+      - MYSQL_USER=fituser
+      - MYSQL_PASSWORD=fitpassword
+    networks:
+      - fitscheduler-network
+    restart: unless-stopped
+    command: --default-authentication-plugin=mysql_native_password
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  fitscheduler-network:
+    driver: bridge
+
+volumes:
+  mysql_data: 

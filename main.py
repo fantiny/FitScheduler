@@ -6,7 +6,7 @@ from app.api.v1 import api_router
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
-    description="BSweetOrder Yoyaku API - A booking system for sports facilities and coaches",
+    description="FitScheduler API - A booking system for sports facilities and coaches",
     version="1.0.0",
     openapi_url=f"{settings.API_V1_STR}/openapi.json",
     docs_url="/docs",
@@ -38,10 +38,10 @@ app.include_router(api_router, prefix=settings.API_V1_STR)
 @app.get("/", tags=["root"])
 def root():
     """
-    Welcome endpoint for the BSweetOrder Yoyaku API.
+    Welcome endpoint for the FitScheduler API.
     """
     return {
-        "message": "Welcome to BSweetOrder Yoyaku API",
+        "message": "Welcome to FitScheduler API",
         "docs": "/docs",
         "redoc": "/redoc",
         "openapi": f"{settings.API_V1_STR}/openapi.json"

@@ -4,10 +4,11 @@
 .github/
 
 # Docker
-.docker
-docker-compose.yml
-Dockerfile
-.dockerignore
+# Do not ignore our docker directory as we need it for the build
+# .docker
+# docker-compose.yml
+# Dockerfile
+# .dockerignore
 
 # Python缓存文件
 __pycache__/
@@ -78,11 +79,12 @@ secrets.json
 credentials.json
 
 # 文档和示例
-docs/
-examples/
-templates/
-README.md
-*.md
+# We need the docker directory README.md
+# docs/
+# examples/
+# templates/
+# README.md
+# *.md
 LICENSE
 
 # 临时目录
