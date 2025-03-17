@@ -1,0 +1,36 @@
+# Alembic Database Migrations
+
+This directory contains database migration scripts for the BSweetOrder Yoyaku application.
+
+## Overview
+
+- Alembic is used to track and apply database schema changes
+- Migration files in the versions/ directory represent the evolution of the database schema
+- Each migration has an upgrade() and downgrade() function
+
+## Common Commands
+
+```bash
+# Create a new migration (automatically detecting changes)
+alembic revision --autogenerate -m "description of changes"
+
+# Apply all pending migrations
+alembic upgrade head
+
+# Downgrade to a specific revision
+alembic downgrade <revision_id>
+
+# Check current database version
+alembic current
+
+# Show migration history
+alembic history
+```
+
+## Project Structure
+
+- versions/ - Contains migration script files
+- env.py - Alembic environment configuration
+- script.py.mako - Template for new migration scripts
+
+For more information, see the [Alembic documentation](https://alembic.sqlalchemy.org/en/latest/).
